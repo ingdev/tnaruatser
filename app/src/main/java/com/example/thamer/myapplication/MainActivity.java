@@ -1,5 +1,6 @@
 package com.example.thamer.myapplication;
 
+import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
@@ -19,81 +20,120 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
-    private Button btn_20;
-    private Button btn_21;
-    private Button btn_22;
-    private Button btn_23;
-    private Button btn_24;
-    private Button btn_25;
-    private Button btn_26;
-    private Button btn_27;
-    private Button btn_28;
-    private Button btn_30;
-    private Button btn_31;
-    private Button btn_32;
-    private Button btn_33;
-    private Button btn_34;
-    private Button btn_35;
-    private Button btn_36;
-    private Button btn_40;
-    private Button btn_41;
-    private Button btn_42;
-    private Button btn_43;
-    private Button btn_44;
-    private Button btn_50;
-    private Button btn_56;
-    private Button btn_55;
+public class MainActivity extends AppCompatActivity{
+    private TButton [] tables;
     private FirebaseDatabase database;
     private DatabaseReference myRef;
-    private String occuper;
+    private int status;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        database = FirebaseDatabase.getInstance();
-        myRef = database.getReference("tables");
-        btn_20 = (Button) findViewById(R.id.but20);
-        myRef.child("20").child("occupe").addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                occuper= dataSnapshot.getValue(String.class);
-                if (occuper.equals("true"))
-                    btn_20.setBackgroundColor(Color.RED);
-                else
-                    btn_20.setBackgroundColor(Color.GREEN);
-            }
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
+        //TODO: check for internet popup
+        init();
+        getStatus();
+        setAction();
+        //TODO: improve the layout
 
-            }
-        });
+    }
 
-        btn_20.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (occuper.equals("true"))
-                {
-                    myRef.child("20").child("occupe").setValue("false");
-                    btn_20.setBackgroundColor(Color.GREEN);
+    private void setAction() {
+        for ( int j=1; j<tables.length; j++) {
+            final int finalJ = j;
+            tables[j].setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Toast.makeText(getApplication(), String.valueOf(finalJ)+" : "+String.valueOf(tables[finalJ].getStatus()), Toast.LENGTH_LONG).show();
+                    if (tables[finalJ].getStatus() == 0) {
+                        myRef.child(String.valueOf(finalJ)).child("occupe").setValue(1);
+                    } else {
+                        myRef.child(String.valueOf(finalJ)).child("occupe").setValue(0);
+                    }
                 }
+            });
+        }
+    }
 
-                    else
-                {
-                    myRef.child("20").child("occupe").setValue("true");
-                    btn_20.setBackgroundColor(Color.RED);
+    private void getStatus() {
+        for ( int j=1; j<tables.length; j++) {
+            final int finalJ = j;
+            myRef.child(String.valueOf(j)).child("occupe").addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.exists()) {
+                        status = dataSnapshot.getValue(Integer.class);
+                        tables[finalJ].setStatus(status);
+                        }
+                        setColor(tables[finalJ]);
+                    }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
 
                 }
-            }
-        });
+            });
+        }
+    }
+
+    private void setColor(TButton btn) {
+        if (btn.getStatus()==1) {
+            btn.setBackgroundColor(Color.RED);
+        } else {
+            btn.setBackgroundColor(Color.GREEN);
+        }
     }
 
 
+    public void init(){
+        database = FirebaseDatabase.getInstance();
+        myRef = database.getReference("tables");
+        tables=new TButton[57];
 
-    @Override
-    public void onClick(View v) {
+        for (int i=0; i<tables.length;i++) {
+            tables[i]=new TButton(this);
+        }
+        tables[1] = (TButton) findViewById(R.id.btn1);
+        tables[2] = (TButton) findViewById(R.id.btn2);
+        tables[3] = (TButton) findViewById(R.id.btn3);
+        tables[4] = (TButton) findViewById(R.id.btn4);
+        tables[5] = (TButton) findViewById(R.id.btn5);
+        tables[6] = (TButton) findViewById(R.id.btn6);
+        tables[7] = (TButton) findViewById(R.id.btn7);
+        tables[8] = (TButton) findViewById(R.id.btn8);
+        tables[9] = (TButton) findViewById(R.id.btn9);
+        tables[10] = (TButton) findViewById(R.id.btn10);
 
+        tables[20] = (TButton) findViewById(R.id.btn20);
+        tables[21] = (TButton) findViewById(R.id.btn21);
+        tables[22] = (TButton) findViewById(R.id.btn22);
+        tables[23] = (TButton) findViewById(R.id.btn23);
+        tables[24] = (TButton) findViewById(R.id.btn24);
+        tables[25] = (TButton) findViewById(R.id.btn25);
+        tables[26] = (TButton) findViewById(R.id.btn26);
+        tables[27] = (TButton) findViewById(R.id.btn27);
+        tables[28] = (TButton) findViewById(R.id.btn28);
+        tables[30] = (TButton) findViewById(R.id.btn30);
+        tables[31] = (TButton) findViewById(R.id.btn31);
+        tables[32] = (TButton) findViewById(R.id.btn32);
+        tables[33] = (TButton) findViewById(R.id.btn33);
+        tables[34] = (TButton) findViewById(R.id.btn34);
+        tables[35] = (TButton) findViewById(R.id.btn35);
+        tables[36] = (TButton) findViewById(R.id.btn36);
+
+        tables[40] = (TButton) findViewById(R.id.btn40);
+        tables[41] = (TButton) findViewById(R.id.btn41);
+        tables[42] = (TButton) findViewById(R.id.btn42);
+        tables[43] = (TButton) findViewById(R.id.btn43);
+        tables[44] = (TButton) findViewById(R.id.btn44);
+
+        tables[50] = (TButton) findViewById(R.id.btn50);
+        tables[51] = (TButton) findViewById(R.id.btn51);
+        tables[52] = (TButton) findViewById(R.id.btn52);
+        tables[53] = (TButton) findViewById(R.id.btn53);
+        tables[54] = (TButton) findViewById(R.id.btn54);
+        tables[55] = (TButton) findViewById(R.id.btn55);
+        tables[56] = (TButton) findViewById(R.id.btn56);
     }
 
 }
